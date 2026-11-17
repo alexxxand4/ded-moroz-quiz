@@ -501,7 +501,7 @@ const sections = [byId("intro"), byId("quiz"), byId("registration"), byId("resul
 const choices = byId("choices");
 const next = byId("next");
 const quizApiBase = document.querySelector('meta[name="quiz-api-base"]')?.content ?? "";
-const formUrl = new URL("https://forms.yandex.ru/u/6afc4b56de8ec3fee6d2530b/?iframe=1");
+const formUrl = new URL("https://forms.yandex.ru/u/6afc5665de8ec310cdd25406/?iframe=1");
 const formContainer = byId("registration-frame");
 const letters = ["А", "Б", "В"];
 const answers = Array(questions.length).fill(null);
@@ -597,7 +597,7 @@ function createReviewItem(question, index) {
 function openRegistration() {
   const frame = document.createElement("iframe");
   frame.title = "Яндекс Форма для отправки имени, фамилии и класса";
-  frame.name = "ya-form-6afc4b56de8ec3fee6d2530b";
+  frame.name = "ya-form-6afc5665de8ec310cdd25406";
   const attemptFormUrl = new URL(formUrl);
   attemptFormUrl.searchParams.set("quiz_attempt", activeAttempt.attemptId);
   frame.src = attemptFormUrl.href;
