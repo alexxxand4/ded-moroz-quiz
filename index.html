@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#142a38">
-  <meta name="description" content="Новогодняя викторина о Деде Морозе. Ответь на десять вопросов и укажи имя, фамилию и класс.">
+  <meta name="description" content="Новогодняя викторина о Деде Морозе. Ответь на десять вопросов, отправь форму и узнай свой результат.">
   <title>День рождения Деда Мороза · Зимняя викторина</title>
   <style>
 :root {
@@ -348,6 +348,12 @@ h1[tabindex]:focus { outline: none; }
   html { scroll-behavior: auto; }
   .button { transition: none; }
 }
+
+
+.score { margin-top: 18px; color: var(--pine); font-weight: 750; line-height: 1; }
+.score strong { font: 700 clamp(4rem, 7vw, 6.1rem)/1 var(--display); }
+.score span { font-size: 1.25rem; }
+#result .eyebrow { margin-bottom: 10px; }
 </style>
   
   
@@ -417,7 +423,7 @@ h1[tabindex]:focus { outline: none; }
         <div class="registration-banner" aria-hidden="true"></div>
         <div class="registration-body">
           <h1 id="registration-title" tabindex="-1">Укажи имя, фамилию и класс</h1>
-          <p class="registration-description">Заполни и отправь форму, чтобы отметить своё участие в викторине.</p>
+          <p class="registration-description">Заполни и отправь форму. Затем здесь появится твой результат.</p>
           <div id="registration-frame"></div>
           <p id="registration-error" class="notice" role="status" hidden>Яндекс Форма не открылась. Попробуй загрузить её ещё раз.</p>
           <div class="game-actions">
@@ -427,6 +433,16 @@ h1[tabindex]:focus { outline: none; }
         </div>
       </section>
 
+      <section id="result" class="registration-card" aria-labelledby="result-title" hidden>
+        <div class="registration-banner" aria-hidden="true"></div>
+        <div class="registration-body">
+          <p class="eyebrow">Викторина пройдена</p>
+          <h1 id="result-title" tabindex="-1" aria-describedby="result-score">Твой результат</h1>
+          <p id="result-score" class="score"><strong id="score"></strong> <span id="score-total"></span></p>
+          <p class="registration-description">Спасибо за участие в зимней викторине!</p>
+          <button id="retry" class="button button-red" type="button">Пройти ещё раз <span aria-hidden="true">↻</span></button>
+        </div>
+      </section>
     </main>
 
     <footer class="footer">
@@ -442,7 +458,8 @@ const questions = [
       "1 декабря",
       "18 ноября",
       "31 декабря"
-    ]
+    ],
+    "correct": 1
   },
   {
     "question": "Какой город называют родиной российского Деда Мороза?",
@@ -450,7 +467,8 @@ const questions = [
       "Кострома",
       "Ярославль",
       "Великий Устюг"
-    ]
+    ],
+    "correct": 2
   },
   {
     "question": "Как зовут внучку Деда Мороза?",
@@ -458,7 +476,8 @@ const questions = [
       "Снегурочка",
       "Метелица",
       "Золушка"
-    ]
+    ],
+    "correct": 0
   },
   {
     "question": "Почему для праздника выбрали дату в ноябре?",
@@ -466,7 +485,8 @@ const questions = [
       "В этот день заканчивается осень",
       "Примерно в это время в Великом Устюге начинаются морозы",
       "В этот день начинаются зимние каникулы"
-    ]
+    ],
+    "correct": 1
   },
   {
     "question": "Как называется сказочная усадьба Деда Мороза под Великим Устюгом?",
@@ -474,7 +494,8 @@ const questions = [
       "Зимний дворец",
       "Ледяной замок",
       "Вотчина Деда Мороза"
-    ]
+    ],
+    "correct": 2
   },
   {
     "question": "В какой области находится Великий Устюг?",
@@ -482,7 +503,8 @@ const questions = [
       "В Вологодской",
       "В Архангельской",
       "В Костромской"
-    ]
+    ],
+    "correct": 0
   },
   {
     "question": "Что Дед Мороз обычно держит в руке?",
@@ -490,7 +512,8 @@ const questions = [
       "Волшебную палочку",
       "Посох",
       "Зонтик"
-    ]
+    ],
+    "correct": 1
   },
   {
     "question": "Как на Почте Деда Мороза в Великом Устюге называют помощников, которые работают с письмами?",
@@ -498,7 +521,8 @@ const questions = [
       "Снежинки",
       "Морозята",
       "Почтули"
-    ]
+    ],
+    "correct": 2
   },
   {
     "question": "На каком дереве зажигают праздничные огни в день рождения Деда Мороза?",
@@ -506,7 +530,8 @@ const questions = [
       "На ёлке",
       "На сосне",
       "На берёзе"
-    ]
+    ],
+    "correct": 0
   },
   {
     "question": "В каком году впервые прошёл праздник «День рождения Деда Мороза» в Великом Устюге?",
@@ -514,13 +539,14 @@ const questions = [
       "В 1999 году",
       "В 2005 году",
       "В 2015 году"
-    ]
+    ],
+    "correct": 1
   }
 ];
 </script>
 <script>
 const byId = (id) => document.getElementById(id);
-const sections = [byId("intro"), byId("quiz"), byId("registration")];
+const sections = [byId("intro"), byId("quiz"), byId("registration"), byId("result")];
 const choices = byId("choices");
 const next = byId("next");
 const formUrl = new URL("https://forms.yandex.ru/u/6afc5665de8ec310cdd25406/?iframe=1");
@@ -611,10 +637,8 @@ window.addEventListener("message", (event) => {
     byId("registration-reload").hidden = false;
   }
 
-  if (data?.message === "sent") {
-    byId("registration-back").hidden = true;
-    byId("registration-error").hidden = true;
-    byId("registration-reload").hidden = true;
+  if (data?.message === "sent" && typeof data.answer_key === "string" && data.answer_key) {
+    showResult();
   }
 });
 
@@ -650,6 +674,23 @@ byId("back").addEventListener("click", () => {
 });
 
 byId("start").addEventListener("click", showQuestion);
+
+
+function showResult() {
+  if (answers.some((answer) => answer === null)) return;
+  const score = questions.reduce((total, question, index) =>
+    total + Number(question.correct === answers[index]), 0);
+  byId("score").textContent = score;
+  byId("score-total").textContent = `из ${questions.length}`;
+  formContainer.replaceChildren();
+  showSection("result", "result-title");
+}
+
+byId("retry").addEventListener("click", () => {
+  answers.fill(null);
+  questionIndex = 0;
+  showQuestion();
+});
 </script>
 </body>
 </html>
